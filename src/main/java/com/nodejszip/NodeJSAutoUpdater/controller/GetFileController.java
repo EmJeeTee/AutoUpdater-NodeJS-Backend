@@ -110,45 +110,6 @@ public class GetFileController {
         return UUID.randomUUID().toString() + "_" + originalFilename;
     }
 
-
-    /*@GetMapping("/download")
-    public ResponseEntity<Resource> downloadFiles(@RequestParam String versionNumber) {
-        Path filePath;
-        try {
-            if("asar".equals(type))
-            {
-                filePath = Paths.get(UPLOAD_DIR +"app."+ type);
-                System.out.println("asar dosya");
-
-            }
-            else if("exe".equals(type))
-            {
-                filePath = Paths.get(UPLOAD_DIR +"electron-app."+ type);
-                System.out.println("exe dosya");
-
-            } else {
-                filePath = Paths.get(UPLOAD_DIR + type);
-                System.out.println("normal dosya");
-            }
-            System.out.println(filePath);
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists()) {
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
-
-                return ResponseEntity.ok()
-                        .headers(headers)
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
-
     private static final String VERSIONS_FOLDER = "C:\\Users\\staj_metin.topcuoglu\\Desktop\\TempServer\\Versions";
 
     @PostMapping("/update")
@@ -180,148 +141,6 @@ public class GetFileController {
     }
 
 
-    /*@GetMapping("/download")
-    public void downloadUpdate(@RequestParam("versionNumber") String versionNumber,
-                               HttpServletResponse response) throws IOException {
-        String folderPath = VERSIONS_FOLDER + File.separator + versionNumber;
-
-        String updateInfoFilePath = folderPath + File.separator + "update_info.json";
-        String fileNameToDownload = null;
-        try {
-            String updateInfoContent = new String(Files.readAllBytes(Paths.get(updateInfoFilePath)));
-            ObjectMapper objectMapper = new ObjectMapper();
-            fileNameToDownload = objectMapper.readTree(updateInfoContent).get("updateType").asText();
-        } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return;
-        }
-        String extractionPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "CraneAirport";
-
-        if (fileNameToDownload.equals("app.asar")) {
-            deleteDirectory(new File(extractionPath));
-            String zipFilePath = folderPath + File.separator + "CraneAirport.zip";
-
-            if (Files.exists(Paths.get(zipFilePath))) {
-                try (FileInputStream inputStream = new FileInputStream(zipFilePath);
-                     ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-                    ZipEntry entry = zipInputStream.getNextEntry();
-                    while (entry != null) {
-                        if (!entry.isDirectory()) {
-                            String fileName = entry.getName();
-                            System.out.println(fileName);
-                            System.out.println(fileNameToDownload);
-                            if (fileName.equals(fileNameToDownload)) {
-
-                                new File(extractionPath).mkdirs();
-                                String filePath = extractionPath + File.separator + fileName;
-
-                                try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
-                                    byte[] buffer = new byte[4096];
-                                    int bytesRead;
-                                    while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                                        outputStream.write(buffer, 0, bytesRead);
-                                    }
-                                } catch (IOException e) {
-                                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                    return;
-                                }
-
-                                response.setStatus(HttpServletResponse.SC_OK);
-                                return;
-                            }
-                        }
-                        zipInputStream.closeEntry();
-                        entry = zipInputStream.getNextEntry();
-                    }
-                } catch (IOException e) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                }
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
-        } else if (fileNameToDownload.equals("fullpackage")) {
-            deleteDirectory(new File(extractionPath));
-            String zipFilePath = folderPath + File.separator + "CraneAirport.zip";
-
-            if (Files.exists(Paths.get(zipFilePath))) {
-                try (FileInputStream inputStream = new FileInputStream(zipFilePath);
-                     ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-                    ZipEntry entry = zipInputStream.getNextEntry();
-                    while (entry != null) {
-                        if (!entry.isDirectory()) {
-                            String fileName = entry.getName();
-                            String filePath = extractionPath + File.separator + fileName;
-
-                            new File(filePath).getParentFile().mkdirs();
-
-                            try (FileOutputStream outputStream = new FileOutputStream(filePath)) {
-                                byte[] buffer = new byte[4096];
-                                int bytesRead;
-                                while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                                    outputStream.write(buffer, 0, bytesRead);
-                                }
-                            } catch (IOException e) {
-                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                return;
-                            }
-                        }
-                        zipInputStream.closeEntry();
-                        entry = zipInputStream.getNextEntry();
-                    }
-                } catch (IOException e) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                }
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-    }*/
-
-    /*@GetMapping("/download")
-    public void downloadUpdate(@RequestParam("versionNumber") String versionNumber, HttpServletResponse response) {
-        String folderPath = VERSIONS_FOLDER + File.separator + versionNumber;
-        String zipFilePath = folderPath + File.separator + "CraneAirport.zip";
-
-        String updateInfoFilePath = folderPath + File.separator + "update_info.json";
-
-        String tempPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "CraneAirport";
-        if (Files.exists(Paths.get(zipFilePath))) {
-            try (FileInputStream inputStream = new FileInputStream(zipFilePath);
-                 ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-                ZipEntry entry = zipInputStream.getNextEntry();
-                deleteDirectory(new File(tempPath));
-                while (entry != null) {
-                    if (!entry.isDirectory()) {
-                        try (FileOutputStream outputStream = new FileOutputStream(tempPath,true)) {
-                            byte[] buffer = new byte[4096];
-                            int bytesRead;
-                            while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                                outputStream.write(buffer, 0, bytesRead);
-                            }
-                        } catch (IOException e) {
-                            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            return;
-                        }
-                    }
-                    zipInputStream.closeEntry();
-                    entry = zipInputStream.getNextEntry();
-                }
-            } catch (IOException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return;
-            }
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-    }*/
-
 
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadUpdate(@RequestParam("versionNumber") String versionNumber, HttpServletResponse response) throws MalformedURLException {
@@ -348,6 +167,7 @@ public class GetFileController {
                     HttpHeaders headers = new HttpHeaders();
                     headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
 
+                    System.out.println("İndirildi.");
                     return ResponseEntity.ok()
                             .headers(headers)
                             .body(resource);
@@ -363,48 +183,7 @@ public class GetFileController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        /*if (fileNameToDownload.equals("app.asar") || fileNameToDownload.equals("fullpackage")) {
-            File zipFile = new File(zipFilePath);
-            if (zipFile.exists()) {
-                try (FileInputStream inputStream = new FileInputStream(zipFile);
-                     ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-
-
-
-
-                    response.setContentType("application/octet-stream");
-                    response.setHeader("Content-Disposition", "attachment; filename=\"CraneAirport.zip\"");
-
-                    System.out.println(zipFile.length());
-
-                    byte[] buffer = new byte[4096];
-                    int bytesRead;
-                    while ((bytesRead = zipInputStream.read(buffer)) != -1) {
-                        response.getOutputStream().write(buffer, 0, bytesRead);
-                    }
-
-
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    return;
-                } catch (IOException e) {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    return;
-                }
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }*/
     }
-
-
-
-
-
-
 
 
     @GetMapping("/latestVersion")
