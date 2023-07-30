@@ -22,7 +22,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -103,11 +102,6 @@ public class GetFileController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed.");
         }
-    }
-
-
-    private String generateUniqueFileName(String originalFilename) {
-        return UUID.randomUUID().toString() + "_" + originalFilename;
     }
 
     private static final String VERSIONS_FOLDER = "C:\\Users\\staj_metin.topcuoglu\\Desktop\\TempServer\\Versions";
@@ -191,7 +185,7 @@ public class GetFileController {
         JSONObject jsonObject = new JSONObject();
         File versionsFolder = new File(VERSIONS_FOLDER);
         if (!versionsFolder.exists() || !versionsFolder.isDirectory()) {
-            return ResponseEntity.badRequest().body("Versions folder not found or not a directory.");
+            return ResponseEntity.badRequest().body("Versions klasörü bulunamadı veya bir dizin değil.");
         }
 
         List<String> versionNumbers = Arrays.stream(Objects.requireNonNull(versionsFolder.list()))
@@ -199,7 +193,7 @@ public class GetFileController {
                 .collect(Collectors.toList());
 
         if (versionNumbers.isEmpty()) {
-            return ResponseEntity.badRequest().body("No versions found in the versions folder.");
+            return ResponseEntity.badRequest().body("Versions klasöründe sürüm bulunamadı.");
         }
 
         String latestVersion = versionNumbers.stream()
@@ -215,14 +209,9 @@ public class GetFileController {
             jsonObject.put("updateType",fileNameToDownload);
             return new ResponseEntity<String>(jsonObject.toString(),HttpStatus.CREATED);
         } else {
-            return ResponseEntity.badRequest().body("Failed to determine the latest version.");
+            return ResponseEntity.badRequest().body("En son version belirlenemedi.");
         }
     }
 
 }
-
-
-
-
-
 
